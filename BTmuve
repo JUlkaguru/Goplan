@@ -1,0 +1,78 @@
+// Подключение библиотеки Bluetooth и Motor Library
+#include <SoftwareSerial.h>
+#include <AFMotor.h>
+
+// Установка пинов для соединения Bluetooth модуля
+SoftwareSerial bluetooth(10, 11); // RX, TX
+
+// Инициализация объектов для управления моторами
+AF_DCMotor motor1(1);
+AF_DCMotor motor2(2);
+
+void setup() {
+  // Настройка скорости соединения через Serial порт
+	Serial.begin(9600);
+  // Настройка скорости и инициализация Bluetooth соединения
+	bluetooth.begin(9600);
+  
+  // Установка начальной скорости моторов
+  motor1.setSpeed(255); // Максимальная скорость: 255
+  motor2.setSpeed(255);
+}
+
+void loop() {
+  // Если полу��ена команда по Bluetooth
+  if (bluetooth.available() > 0) {
+    // Считывание команды
+		char command = bluetooth.read();
+    
+    // Проверка команды и выполнение соответствующих действий
+		switch (command) {
+			case 'F':
+				forward(); // Движение вперед
+				break;
+			case 'B':
+				backward(); // Движение назад
+				break;
+			case 'L':
+				left(); // Поворот налево
+				break;
+			case 'R':
+				right(); // Поворот направо
+				break;
+			case 'S':
+				stop(); // Остановка
+				break;
+		}
+	}
+}
+
+// Функция для движения вперед
+void forward() {
+  motor1.run(FORWARD); // Включение двигателя 1 вперед
+  motor2.run(FORWARD); // Включение двигателя 2 вперед
+}
+
+// Функция для движения назад
+void backward() {
+  motor1.run(BACKWARD); // Включение двигателя 1 назад
+  motor2.run(BACKWARD); // Включение двигателя 2 назад
+}
+
+// Функция для поворота налево
+void left() {
+  motor1.run(BACKWARD); // Включение двигателя 1 назад
+  motor2.run(FORWARD); // Включение двигателя 2 вперед
+}
+
+// Функция для поворота направо
+void right() {
+  motor1.run(FORWARD); // Включение двигателя 1 вперед
+  motor2.run(BACKWARD); // Включение двигателя 2 назад
+}
+
+// Функция для остановки двигателей
+void stop() {
+  motor1.run(RELEASE); // Отключение двигателя 1
+  motor2.run(RELEASE); // Отключение двигателя 2
+}
